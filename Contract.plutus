@@ -1,0 +1,23 @@
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE NoImplicitPrelude   #-}
+{-# LANGUAGE TemplateHaskell     #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE OverloadedStrings   #-}
+
+module TicketNFT where
+
+import           Plutus.V2.Ledger.Api  (BuiltinData, mkValidatorScript)
+import           PlutusTx              (compile)
+import           PlutusTx.Prelude      (Bool (..), traceIfFalse)
+import           Prelude               (IO)
+
+{-# INLINABLE mkValidator #-}
+mkValidator :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+mkValidator datum redeemer context = 
+    traceIfFalse "Invalid transaction!" $ True
+
+validator :: PlutusTx.CompiledCode (BuiltinData -> BuiltinData -> BuiltinData -> ())
+validator = $$(PlutusTx.compile [|| mkValidator ||])
+
+main :: IO ()
+main = print $ mkValidatorScript validator
